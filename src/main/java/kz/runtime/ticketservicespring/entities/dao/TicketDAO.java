@@ -4,9 +4,13 @@ import kz.runtime.ticketservicespring.entities.Ticket;
 import kz.runtime.ticketservicespring.entities.dao.impl.TicketDaoImpl;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TicketDAO implements TicketDaoImpl {
-    SessionFactory sessionFactory;
+
+    private final SessionFactory sessionFactory;
+
     public TicketDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -43,9 +47,10 @@ public class TicketDAO implements TicketDaoImpl {
     public void save(Ticket ticket) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.createNativeQuery("INSERT INTO Ticket (ticket_type, creation_date) VALUES(CAST(?1 AS ticket_type), ?2)", Ticket.class)
-                    .setParameter(1, ticket.getTicketType())
-                    .setParameter(2, ticket.getCreationDate())
+            session.createNativeQuery("INSERT INTO Ticket (user_id, ticket_type, creation_date) VALUES(?1, CAST(?2 AS ticket_type), ?3)", Ticket.class)
+                    .setParameter(1, ticket.getUserId())
+                    .setParameter(2, ticket.getTicketType())
+                    .setParameter(3, ticket.getCreationDate())
                     .executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
