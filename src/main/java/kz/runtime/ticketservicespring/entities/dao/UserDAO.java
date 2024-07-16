@@ -4,7 +4,10 @@ import kz.runtime.ticketservicespring.entities.User;
 import kz.runtime.ticketservicespring.entities.dao.impl.UserDaoImpl;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class UserDAO implements UserDaoImpl {
     SessionFactory sessionFactory;
     public UserDAO(SessionFactory sessionFactory) {
