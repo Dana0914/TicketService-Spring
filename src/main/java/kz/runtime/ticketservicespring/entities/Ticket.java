@@ -11,7 +11,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @Entity
 @Data
 @Table(name = "ticket")
@@ -21,25 +20,21 @@ public class Ticket {
     private Long id;
     @Column(name = "user_id", insertable=false, updatable=false)
     private Long userId;
+    @Enumerated(EnumType.STRING)
     @Column(name = "ticket_type")
-    private String ticketType;
+    private TicketType ticketType;
     @Column(name = "creation_date")
     private LocalDate creationDate;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-
-    public Ticket() {
-
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ticket ticket = (Ticket) o;
-        return Objects.equals(id, ticket.id) && ticketType == ticket.ticketType && Objects.equals(creationDate, ticket.creationDate);
+        return Objects.equals(id, ticket.id) && Objects.equals(ticketType, ticket.ticketType) && Objects.equals(creationDate, ticket.creationDate);
     }
 
     @Override

@@ -1,35 +1,40 @@
-package kz.runtime.ticketservicespring.serviice;
+package kz.runtime.ticketservicespring.service;
 
-import jakarta.transaction.Transactional;
-import kz.runtime.ticketservicespring.customexception.UserNotFoundException;
-import kz.runtime.ticketservicespring.entities.Ticket;
 import kz.runtime.ticketservicespring.entities.User;
-import kz.runtime.ticketservicespring.entities.dao.TicketDAO;
-import kz.runtime.ticketservicespring.entities.dao.UserDAO;
-import org.springframework.beans.factory.annotation.Value;
+import kz.runtime.ticketservicespring.repo.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
 
 
 @Service
 public class UserService {
-    private final TicketDAO ticketDao;
-    private final UserDAO userDao;
+    private final UserRepository userRepository;
 
-    @Value("${feature.updateUserAndCreateTicket.enabled}")
-    private boolean isEnabled;
-
-    public UserService(TicketDAO ticketDao, UserDAO userDao, boolean isEnabled) {
-        this.ticketDao = ticketDao;
-        this.userDao = userDao;
-        this.isEnabled = isEnabled;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    @Transactional
-    public void updateUserAndCreateTicket(Ticket ticket, User user) throws UserNotFoundException {
-        if (!isEnabled) {
-            throw new UserNotFoundException("User not found");
-        }
-        userDao.update(user);
-        ticketDao.save(ticket);
+    public User findUserById(Long id) {
+        return userRepository.findUserById(id);
+    }
+    public void deleteUserById(Long id) {
+        userRepository.deleteUserById(id);
+    }
+    public List<User> fetchAllUsers() {
+        return (List<User>) userRepository.findAll();
+    }
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+    public User updateUser(User user) {
+        String name = user.getUsername();
+        LocalDate creationDate = user.getCreationDate();
+        Long id = user.getId();
+        findUserById(id);
+        user.setUsername(user.getUsername());
+        user.setCreationDate(user.getCreationDate());
+        return userRepository.save(user);
     }
 }
