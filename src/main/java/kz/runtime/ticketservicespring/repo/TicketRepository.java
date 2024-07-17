@@ -1,7 +1,7 @@
 package kz.runtime.ticketservicespring.repo;
 
+import jakarta.transaction.Transactional;
 import kz.runtime.ticketservicespring.entities.Ticket;
-import kz.runtime.ticketservicespring.entities.TicketType;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 
+@Transactional
 @Repository
 public interface TicketRepository extends CrudRepository<Ticket, Long> {
     Ticket findTicketById(Long id);
@@ -17,9 +18,12 @@ public interface TicketRepository extends CrudRepository<Ticket, Long> {
     void deleteTicketById(Long id);
     void deleteUserById(Long id);
     @Modifying
-    @Query("UPDATE Ticket t SET t.ticketType = :ticket_type, t.creationDate = :creation_data," +
-            "t.userId = :user_id where t.id = :id")
-    Ticket updateTicket(Ticket ticket, @Param("user_id")String userId,
-                        @Param("id")Long id, @Param("ticket_type")TicketType ticketType,
-                        @Param("creation_data")LocalDate creationDate);
+    @Query(value = "INSERT INTO ticket (ticket_type, creation_date, user_id) VALUES(CAST(:ticket_type AS ticket_type), :creation_date, :user_id)",  nativeQuery = true)
+    void insertUser(@Param("ticket_type")String ticketType, @Param("creation_date")LocalDate creationDate, @Param("user_id")Long userId);
+    @Modifying
+    @Query(value = "UPDATE ticket SET ticket_type = CAST(:ticket_type AS ticket_type), creation_date = :creation_data," +
+            "user_id = :user_id where id = :id", nativeQuery = true)
+    void updateTicket(@Param("ticket_type")String ticketType,@Param("creation_data")LocalDate creationDate,
+                   @Param("user_id")Long userId,
+                        @Param("id")Long id);
 }

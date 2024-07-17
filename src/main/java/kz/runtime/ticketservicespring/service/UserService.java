@@ -4,7 +4,7 @@ import kz.runtime.ticketservicespring.entities.User;
 import kz.runtime.ticketservicespring.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+
 import java.util.List;
 
 
@@ -25,16 +25,14 @@ public class UserService {
     public List<User> fetchAllUsers() {
         return (List<User>) userRepository.findAll();
     }
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public void saveUser(User user) {
+        userRepository.insertUser(user.getCreationDate(), user.getUsername());
     }
-    public User updateUser(User user) {
-        String name = user.getUsername();
-        LocalDate creationDate = user.getCreationDate();
-        Long id = user.getId();
-        findUserById(id);
-        user.setUsername(user.getUsername());
-        user.setCreationDate(user.getCreationDate());
-        return userRepository.save(user);
+    public User updateUser(Long id, User user) {
+        User userId = userRepository.findUserById(id);
+        userId.setCreationDate(user.getCreationDate());
+        userId.setUsername(user.getUsername());
+        userRepository.updateUser(userId.getCreationDate(), user.getUsername(), userId.getId());
+        return userId;
     }
 }

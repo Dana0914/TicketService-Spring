@@ -1,5 +1,6 @@
 package kz.runtime.ticketservicespring.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,10 @@ public class User {
     @Column(name = "creation_date")
     private LocalDate creationDate;
 
+    public User() {
+
+    }
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Ticket> tickets;
 

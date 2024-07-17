@@ -28,6 +28,9 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    public Ticket() {
+
+    }
 
     @Override
     public boolean equals(Object o) {
