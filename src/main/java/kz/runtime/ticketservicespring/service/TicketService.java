@@ -34,15 +34,11 @@ public class TicketService {
     public List<Ticket> fetchAllTickets() {
         return (List<Ticket>) ticketRepository.findAll();
     }
-    public Ticket updateTicket(Long id, Ticket ticket) {
+    public void updateTicket(Long id, Ticket ticket) {
         Ticket ticketId = ticketRepository.findTicketById(id);
         ticketId.setTicketType(ticket.getTicketType());
         ticketId.setCreationDate(ticket.getCreationDate());
         ticketId.setUserId(ticket.getUserId());
         ticketRepository.updateTicket(ticketId.getTicketType().name(), ticketId.getCreationDate(), ticketId.getUserId(), ticketId.getId());
-        return ticketId;
     }
-
-
-
 }

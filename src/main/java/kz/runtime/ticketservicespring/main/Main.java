@@ -4,6 +4,7 @@ import kz.runtime.ticketservicespring.config.MyCustomConfiguration;
 import kz.runtime.ticketservicespring.entities.Ticket;
 import kz.runtime.ticketservicespring.entities.TicketType;
 import kz.runtime.ticketservicespring.entities.User;
+import kz.runtime.ticketservicespring.security.SecurityConfig;
 import kz.runtime.ticketservicespring.service.TicketService;
 import kz.runtime.ticketservicespring.service.UserService;
 import org.springframework.context.ApplicationContext;
@@ -18,14 +19,14 @@ public class Main {
         System.out.println(customConfiguration.thisIsMyFirstConditionalBean());
         TicketService ticketService = context.getBean(TicketService.class);
         UserService userService = context.getBean(UserService.class);
-        User userId = userService.findUserById(5L);
-        userId.setUsername("Drake");
-        userId.setCreationDate(LocalDate.of(2024,5,8));
+        User userId = userService.findUserById(4L);
+        userId.setUsername("Dylan");
+        userId.setCreationDate(LocalDate.of(2024,4,4));
         userService.updateUser(userId.getId(), userId);
         Ticket ticketById = new Ticket();
         ticketById.setCreationDate(LocalDate.now());
-        ticketById.setTicketType(TicketType.DAY);
-        ticketById.setUserId(4L);
-        ticketService.updateTicket(10L, ticketById);
+        ticketById.setTicketType(TicketType.MONTH);
+        ticketById.setUserId(5L);
+        ticketService.updateTicket(8L, ticketById);
     }
 }
