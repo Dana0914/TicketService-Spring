@@ -22,11 +22,10 @@ public class Main {
         userId.setUsername("Drake");
         userId.setCreationDate(LocalDate.of(2024,5,8));
         userService.updateUser(userId.getId(), userId);
-//        Ticket ticketById = new Ticket();
-//        ticketById.setCreationDate(LocalDate.now());
-//        ticketById.setTicketType(TicketType.DAY);
-//        ticketById.setUserId(4L);
-//        ticketService.updateTicket(10L, ticketById);
-
+        Ticket ticketById = new Ticket();
+        ticketById.setCreationDate(LocalDate.now());
+        ticketById.setTicketType(TicketType.DAY);
+        ticketById.setUserId(4L);
+        ticketService.updateTicket(10L, ticketById);
     }
 }
