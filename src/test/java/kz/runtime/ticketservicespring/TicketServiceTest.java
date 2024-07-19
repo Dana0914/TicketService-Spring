@@ -26,15 +26,6 @@ public class TicketServiceTest {
     private TicketService ticketService;
     @Mock
     private TicketRepository ticketRepository;
-    private Ticket ticket;
-    @BeforeEach
-    public void init() {
-        ticket = new Ticket();
-        ticket.setId(1L);
-        ticket.setTicketType(TicketType.MONTH);
-        ticket.setUserId(45L);
-        ticket.setCreationDate(LocalDate.now());
-    }
 
     @Test
     public void testFindTicketById_ifIdFoundWithExistentTicket_Found() {
@@ -44,8 +35,6 @@ public class TicketServiceTest {
         ticketToFind.setCreationDate(LocalDate.of(2024, 7, 18));
         when(ticketRepository.findById(ticketToFind.getId())).thenReturn(Optional.of(ticketToFind));
         Optional<Ticket> foundTicket = ticketService.findTicketById(ticketToFind.getId());
-        System.out.println(ticketToFind);
-        System.out.println(foundTicket);
         Assertions.assertTrue(foundTicket.isPresent());
         Assertions.assertEquals(ticketToFind, foundTicket.get());
     }
@@ -80,8 +69,6 @@ public class TicketServiceTest {
           ticketToFind.setUserId(4L);
           when(ticketRepository.findByUserId(ticketToFind.getUserId())).thenReturn(Optional.empty());
           Optional<Ticket> foundTicket = ticketService.findTicketByUserId(ticketToFind.getUserId());
-          System.out.println(ticketRepository.findById(ticketToFind.getId()));
-          System.out.println(ticketService.findTicketByUserId(ticketToFind.getUserId()));
           Assertions.assertFalse(foundTicket.isPresent());
       }
     @Test
@@ -104,18 +91,17 @@ public class TicketServiceTest {
         Assertions.assertTrue(deletedTicket.isEmpty());
     }
     @Test
-    public void testDeleteTicketById_ifDeletedIdWithNonExistentTicket_ShouldReturnFalseIfNotDeleted() {
+    public void testDeleteTicketById_ifDeletedIdWithNonExistentTicket_ShouldThrowException() {
         Ticket ticketToDelete = new Ticket();
         ticketToDelete.setId(1L);
-        when(ticketRepository.findById(ticketToDelete.getId())).thenReturn(Optional.empty());
-        ticketService.deleteTicketById(ticketToDelete.getId());
-        Optional<Ticket> deletedTicket = ticketService.findTicketById(ticketToDelete.getId());
-        Assertions.assertFalse(deletedTicket.isPresent());
+        when(ticketRepository.findById(ticketToDelete.getId())).thenReturn(Optional.empty()).thenThrow();
+        Assertions.assertThrows(NoSuchElementException.class, () -> ticketService.deleteTicketById(ticketToDelete.getId()));
     }
     @Test
     public void testDeleteTicketById_IfIdIsNull_ShouldThrowException() {
         Ticket ticketToDelete = new Ticket();
         ticketToDelete.setId(null);
+        when(ticketRepository.findById(ticketToDelete.getId())).thenReturn(Optional.empty()).thenThrow();
         Assertions.assertThrows(NoSuchElementException.class, () -> ticketService.deleteTicketById(ticketToDelete.getId()));
     }
     @Test
@@ -129,8 +115,73 @@ public class TicketServiceTest {
                 ticketToSave.getUserId())).thenReturn(1);
         Ticket savedTicket = ticketService.saveTicket(ticketToSave);
         Assertions.assertEquals(ticketToSave,savedTicket);
-
     }
+    @Test
+    public void testSaveTicket_ifTicketUserIdIsNull_ShouldThrowException() {
+        Ticket ticketToSave = new Ticket();
+        ticketToSave.setId(10L);
+        ticketToSave.setTicketType(TicketType.MONTH);
+        ticketToSave.setCreationDate(LocalDate.now());
+        ticketToSave.setUserId(null);
+        when(ticketRepository.save(ticketToSave.getTicketType().name(), ticketToSave.getCreationDate(),
+                ticketToSave.getUserId()))
+                .thenThrow(new NullPointerException());
 
+        Assertions.assertThrows(NullPointerException.class, () -> ticketService.saveTicket(ticketToSave));
+    }
+    @Test
+    public void testSaveTicket_ifTicketDateIsNull_ShouldThrowException() {
+        Ticket ticketToSave = new Ticket();
+        ticketToSave.setId(15L);
+        ticketToSave.setTicketType(TicketType.MONTH);
+        ticketToSave.setUserId(5L);
+        ticketToSave.setCreationDate(null);
+        when(ticketRepository.save(ticketToSave.getTicketType().name(), ticketToSave.getCreationDate(),
+                ticketToSave.getUserId()))
+                .thenThrow(new NullPointerException());
+
+        Assertions.assertThrows(NullPointerException.class, () -> ticketService.saveTicket(ticketToSave));
+    }
+    @Test
+    public void testUpdateTicket_updateTicketType_ShouldUpdateTicket() {
+        Ticket ticketToUpdate = new Ticket();
+        ticketToUpdate.setId(1L);
+        ticketToUpdate.setTicketType(TicketType.MONTH);
+        ticketToUpdate.setUserId(5L);
+        ticketToUpdate.setCreationDate(LocalDate.of(2023, 1, 1));
+
+        Ticket updatedTicket = new Ticket();
+        updatedTicket.setId(1L);
+        updatedTicket.setTicketType(TicketType.YEAR);
+        updatedTicket.setUserId(5L);
+        updatedTicket.setCreationDate(LocalDate.of(2024,5,7));
+
+        when(ticketRepository.findById(ticketToUpdate.getId())).thenReturn(Optional.of(ticketToUpdate));
+
+        when(ticketRepository.updateTicket(updatedTicket.getTicketType().name(),
+                updatedTicket.getCreationDate(), updatedTicket.getUserId(),
+                updatedTicket.getId())).thenReturn(1);
+
+        Optional<Ticket> updated = ticketService.updateTicket(ticketToUpdate.getId(), updatedTicket);
+
+        Assertions.assertEquals(updatedTicket.getTicketType(), updated.get().getTicketType());
+    }
+    @Test
+    public void testUpdateTicket_ifTicketUserIdAndDateAreNull_ShouldThrowException() {
+        Ticket ticketToUpdate = new Ticket();
+        ticketToUpdate.setId(1L);
+        ticketToUpdate.setTicketType(TicketType.MONTH);
+        ticketToUpdate.setCreationDate(LocalDate.now());
+        ticketToUpdate.setUserId(5L);
+
+        Ticket updatedTicket = new Ticket();
+        updatedTicket.setId(1L);
+        updatedTicket.setTicketType(TicketType.YEAR);
+        updatedTicket.setUserId(null);
+        updatedTicket.setCreationDate(null);
+
+        when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticketToUpdate));
+        Assertions.assertThrows(NoSuchElementException.class, () -> ticketService.updateTicket(1L, updatedTicket));
+    }
 
 }
