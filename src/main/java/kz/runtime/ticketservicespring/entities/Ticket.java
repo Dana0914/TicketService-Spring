@@ -48,7 +48,7 @@ public class Ticket {
     @Override
     public String toString() {
         return "Ticket{" +
-                "id=" + id +
+                "id=" + id + ", userId=" + userId +
                 ", ticketType=" + ticketType +
                 ", creationDate=" + creationDate +
                 '}';

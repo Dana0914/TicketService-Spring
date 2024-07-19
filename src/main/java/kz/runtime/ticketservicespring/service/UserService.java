@@ -28,11 +28,11 @@ public class UserService {
     public void saveUser(User user) {
         userRepository.insertUser(user.getCreationDate(), user.getUsername());
     }
-    public void updateUser(Long id, User user) {
+    public User updateUser(Long id, User user) {
         User userId = userRepository.findUserById(id);
         userId.setCreationDate(user.getCreationDate());
         userId.setUsername(user.getUsername());
         userRepository.updateUser(userId.getCreationDate(), user.getUsername(), userId.getId());
-
+        return userId;
     }
 }

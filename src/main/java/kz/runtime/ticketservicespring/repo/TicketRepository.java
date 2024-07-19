@@ -9,21 +9,20 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Transactional
 @Repository
 public interface TicketRepository extends CrudRepository<Ticket, Long> {
-    Ticket findTicketById(Long id);
-    Ticket findTicketByUserId(Long id);
-    void deleteTicketById(Long id);
-    void deleteUserById(Long id);
+    Optional<Ticket> findByUserId(Long id);
     @Modifying
     @Query(value = "INSERT INTO ticket (ticket_type, creation_date, user_id) VALUES(CAST(:ticket_type AS ticket_type), :creation_date, :user_id)",  nativeQuery = true)
-    void insertUser(@Param("ticket_type")String ticketType, @Param("creation_date")LocalDate creationDate, @Param("user_id")Long userId);
+    Integer save(@Param("ticket_type")String ticketType, @Param("creation_date")LocalDate creationDate, @Param("user_id")Long userId);
     @Modifying
     @Query(value = "UPDATE ticket SET ticket_type = CAST(:ticket_type AS ticket_type), creation_date = :creation_data," +
             "user_id = :user_id where id = :id", nativeQuery = true)
-    void updateTicket(@Param("ticket_type")String ticketType,@Param("creation_data")LocalDate creationDate,
+    Integer updateTicket(@Param("ticket_type")String ticketType,@Param("creation_data")LocalDate creationDate,
                    @Param("user_id")Long userId,
                         @Param("id")Long id);
+
 }
