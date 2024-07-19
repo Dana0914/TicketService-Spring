@@ -183,5 +183,19 @@ public class TicketServiceTest {
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticketToUpdate));
         Assertions.assertThrows(NoSuchElementException.class, () -> ticketService.updateTicket(1L, updatedTicket));
     }
+    @Test
+    public void testUpdateTicket_ifTicketIdIsNonExistent_ShouldThrowException() {
+        Ticket ticketToUpdate = new Ticket();
+        ticketToUpdate.setId(999L);
+        Ticket updatedTicket = new Ticket();
+        updatedTicket.setId(999L);
+        updatedTicket.setTicketType(TicketType.YEAR);
+        updatedTicket.setUserId(5L);
+        updatedTicket.setCreationDate(LocalDate.now());
+
+        when(ticketRepository.findById(ticketToUpdate.getId())).thenReturn(Optional.empty());
+        Assertions.assertThrows(NoSuchElementException.class, () -> ticketService.updateTicket(999L, updatedTicket));
+
+    }
 
 }
